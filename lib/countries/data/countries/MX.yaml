@@ -26,6 +26,11 @@ MX:
   world_region: AMER
   un_locode: MX
   nationality: Mexican
+  vat_rates:
+    standard: 16
+    reduced: []
+    super_reduced:
+    parking:
   postal_code: true
   unofficial_names:
   - Mexico
@@ -54,3 +59,4 @@ MX:
         lat: 14.3895
         lng: -118.6523001
   currency_code: MXN
+  start_of_week: monday

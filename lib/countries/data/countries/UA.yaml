@@ -26,6 +26,12 @@ UA:
   world_region: EMEA
   un_locode: UA
   nationality: Ukrainian
+  vat_rates:
+    standard: 20
+    reduced:
+      - 7
+    super_reduced: 
+    parking: 
   postal_code: true
   unofficial_names:
   - Ukraine
@@ -56,3 +62,4 @@ UA:
         lat: 44.2924
         lng: 22.137159
   currency_code: UAH
+  start_of_week: monday

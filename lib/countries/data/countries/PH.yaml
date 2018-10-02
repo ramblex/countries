@@ -26,6 +26,11 @@ PH:
   world_region: APAC
   un_locode: PH
   nationality: Filipino
+  vat_rates:
+    standard: 12
+    reduced: []
+    super_reduced:
+    parking:
   postal_code: true
   unofficial_names:
   - Philippines
@@ -56,3 +61,4 @@ PH:
         lat: 4.2259
         lng: 116.1474999
   currency_code: PHP
+  start_of_week: monday

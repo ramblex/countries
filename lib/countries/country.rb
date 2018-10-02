@@ -47,18 +47,24 @@ module ISO3166
       to_s <=> other.to_s
     end
 
-    def currency
-      Money::Currency.find(data['currency_code'])
+    def start_of_week
+      data['start_of_week']
     end
 
     def subdivisions?
-      File.exist?(subdivision_file_path)
+      !subdivisions.empty?
     end
 
     def subdivisions
-      @subdivisions ||= subdivision_data.inject({}) do |hash, (k, v)|
-        hash.merge(k => Subdivision.new(v))
-      end
+      @subdivisions ||= if data['subdivisions']
+                          self.class.create_subdivisions(data['subdivisions'])
+                        else
+                          self.class.subdivisions(alpha2)
+                        end
+    end
+
+    def subdivision_names_with_codes(locale = 'en')
+      subdivisions.map { |k, v| [v.translations[locale] || v.name, k] }
     end
 
     alias states subdivisions
@@ -101,20 +107,6 @@ module ISO3166
               else
                 ISO3166::Data.new(@country_data_or_code).call
               end
-    end
-
-    private
-
-    def subdivision_data
-      @subdivision_data ||= if subdivisions?
-                              YAML.load_file(subdivision_file_path)
-                            else
-                              {}
-                            end
-    end
-
-    def subdivision_file_path
-      File.join(File.dirname(__FILE__), 'data', 'subdivisions', "#{alpha2}.yaml")
     end
   end
 end

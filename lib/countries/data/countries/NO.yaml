@@ -25,6 +25,11 @@
   un_locode: 'NO'
   nationality: Norwegian
   eea_member: true
+  vat_rates:
+    standard: 25
+    reduced: []
+    super_reduced:
+    parking:
   postal_code: true
   unofficial_names:
   - Norway
@@ -56,3 +61,4 @@
         lat: 57.8097
         lng: 4.0649
   currency_code: NOK
+  start_of_week: monday

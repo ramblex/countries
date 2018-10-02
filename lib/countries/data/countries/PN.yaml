@@ -3,7 +3,7 @@ PN:
   continent: Australia
   alpha2: PN
   alpha3: PCN
-  country_code: ''
+  country_code: '64'
   international_prefix: '00'
   ioc: 
   gec: PC
@@ -45,3 +45,4 @@ PN:
         lat: -25.1776023
         lng: -130.9268188
   currency_code: NZD
+  start_of_week: monday

@@ -3,6 +3,7 @@
 require 'spec_helper'
 NUM_OF_COUNTRIES = 249
 describe ISO3166::Country do
+  before { ISO3166.configuration.enable_currency_extension! }
   let(:country) { ISO3166::Country.search('US') }
 
   it 'allows to create a country object from a symbol representation of the alpha2 code' do
@@ -242,6 +243,26 @@ describe ISO3166::Country do
     end
   end
 
+  describe 'subdivision_names_with_codes' do
+    it 'should return an alphabetized list of all subdivisions names with codes' do
+      subdivisions = ISO3166::Country.search('EG').subdivision_names_with_codes
+      expect(subdivisions).to be_an(Array)
+      expect(subdivisions.first[0]).to be_a(String)
+      expect(subdivisions.size).to eq(27)
+      expect(subdivisions.first[0]).to eq('Alexandria')
+    end
+
+    it 'should return an alphabetized list of subdivision names translated to current locale with codes' do
+      ISO3166.configuration.locales = [:es, :de, :en]
+
+      subdivisions = ISO3166::Country.search('EG').subdivision_names_with_codes(:es)
+      expect(subdivisions).to be_an(Array)
+      expect(subdivisions.first[0]).to be_a(String)
+      expect(subdivisions.size).to eq(27)
+      expect(subdivisions.first[0]).to eq('Al Iskandariyah')
+    end
+  end
+
   describe 'valid?' do
     it 'should return true if country is valid' do
       expect(ISO3166::Country.new('US')).to be_valid
@@ -318,6 +339,27 @@ describe ISO3166::Country do
 
   describe 'all_names_with_codes' do
     require 'active_support/core_ext/string/output_safety'
+    it 'should return an alphabetized list of all country names with ISOCODE alpha2' do
+      countries = ISO3166::Country.all_names_with_codes
+      expect(countries).to be_an(Array)
+      expect(countries.first[0]).to be_a(String)
+      expect(countries.first[0]).to eq('Afghanistan')
+      expect(countries.size).to eq(NUM_OF_COUNTRIES)
+      expect(countries.any?{|pair| !pair[0].html_safe?}).to eq(false)
+    end
+
+    it 'should return an alphabetized list of all country names translated to current locale with ISOCODE alpha2' do
+      ISO3166.configuration.locales = [:es, :de, :en]
+
+      countries = ISO3166::Country.all_names_with_codes(:es)
+      expect(countries).to be_an(Array)
+      expect(countries.first[0]).to be_a(String)
+      expect(countries.first[0]).to eq('Afganistán')
+      expect(countries.size).to eq(NUM_OF_COUNTRIES)
+    end
+  end
+
+  describe 'all_names_with_codes_without_active_support' do
     it 'should return an alphabetized list of all country names with ISOCODE alpha2' do
       countries = ISO3166::Country.all_names_with_codes
       expect(countries).to be_an(Array)
@@ -477,6 +519,31 @@ describe ISO3166::Country do
       end
     end
 
+    context "when search name with comma in 'name'" do
+      subject { ISO3166::Country.find_by_name(country_name) }
+
+      context 'with Republic of Korea' do
+        let(:country_name) { 'Korea, Republic of' }
+        it 'should return' do
+          expect(subject.first).to eq('KR')
+        end
+      end
+
+      context 'with Bolivia' do
+        let(:country_name) { 'Bolivia, Plurinational State of' }
+        it 'should return' do
+          expect(subject.first).to eq('BO')
+        end
+      end
+
+      context 'with Bonaire' do
+        let(:country_name) { 'Bonaire, Sint Eustatius and Saba' }
+        it 'should return' do
+          expect(subject.first).to eq('BQ')
+        end
+      end
+    end
+
     context 'when search lowercase multibyte name found' do
       subject { ISO3166::Country.find_country_by_name('россия') }
 
@@ -552,6 +619,15 @@ describe ISO3166::Country do
       it 'should be a country instance' do
         expect(uk).to be_a(ISO3166::Country)
         expect(uk.alpha2).to eq('GB')
+      end
+    end
+
+    context 'when the search term contains comma' do
+      let(:korea) { ISO3166::Country.find_country_by_name('Korea, Republic of') }
+
+      it 'should be a country instance' do
+        expect(korea).to be_a(ISO3166::Country)
+        expect(korea.alpha2).to eq('KR')
       end
     end
 

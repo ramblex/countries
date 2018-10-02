@@ -1,6 +1,6 @@
 module ISO3166
   UNSEARCHABLE_METHODS = [:translations].freeze
-  
+
   def self::Country(country_data_or_country)
     case country_data_or_country
     when ISO3166::Country
@@ -14,6 +14,7 @@ module ISO3166
 
   module CountryClassMethods
     FIND_BY_REGEX = /^find_(all_)?(country_|countries_)?by_(.+)/
+    SEARCH_TERM_FILTER_REGEX = /\(|\)|\[\]|,/
 
     def new(country_data)
       super if country_data.is_a?(Hash) || codes.include?(country_data.to_s.upcase)
@@ -35,7 +36,10 @@ module ISO3166
     end
 
     def all_names_with_codes(locale = 'en')
-      Country.all.map { |c| [(c.translation(locale) || c.name).html_safe, c.alpha2] }.sort
+      Country.all.map do |c|
+        lc = (c.translation(locale) || c.name)
+        [lc.respond_to?('html_safe') ? lc.html_safe : lc, c.alpha2]
+      end.sort
     end
 
     def translations(locale = 'en')
@@ -75,10 +79,23 @@ module ISO3166
       ISO3166::Data.cache.select do |_, v|
         country = Country.new(v)
         attributes.any? do |attr|
-          Array(country.send(attr)).any? { |n| lookup_value === strip_accents(n) }
+          Array(country.send(attr)).any? { |n| lookup_value === parse_value(n) }
         end
       end
     end
+
+    def subdivisions(alpha2)
+      @subdivisions ||= {}
+      @subdivisions[alpha2] ||= create_subdivisions(subdivision_data(alpha2))
+    end
+
+    def create_subdivisions(subdivision_data)
+      subdivision_data.each_with_object({}) do |(k, v), hash|
+        hash[k] = Subdivision.new(v)
+      end
+    end
+
+    protected
 
     def strip_accents(v)
       if v.is_a?(Regexp)
@@ -87,8 +104,6 @@ module ISO3166
         UnicodeUtils.downcase(v.to_s.unaccent)
       end
     end
-
-    protected
 
     def parse_attributes(attribute, val)
       raise "Invalid attribute name '#{attribute}'" unless searchable_attribute?(attribute.to_sym)
@@ -100,7 +115,7 @@ module ISO3166
         # attributes << 'translated_names'
       end
 
-      [attributes, strip_accents(val)]
+      [attributes, parse_value(val)]
     end
 
     def searchable_attribute?(attribute)
@@ -115,6 +130,20 @@ module ISO3166
       find_all_by(attribute.downcase, value).map do |country|
         obj.nil? ? country : new(country.last)
       end
+    end
+
+    def parse_value(value)
+      value = value.gsub(SEARCH_TERM_FILTER_REGEX, '') if value.respond_to?(:gsub)
+      strip_accents(value)
+    end
+
+    def subdivision_data(alpha2)
+      file = subdivision_file_path(alpha2)
+      File.exist?(file) ? YAML.load_file(file) : {}
+    end
+
+    def subdivision_file_path(alpha2)
+      File.join(File.dirname(__FILE__), '..', 'data', 'subdivisions', "#{alpha2}.yaml")
     end
   end
 end

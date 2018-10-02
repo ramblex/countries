@@ -23,7 +23,7 @@ HK:
   subregion: Eastern Asia
   world_region: APAC
   un_locode: HK
-  nationality: Chinese
+  nationality: Hong Kongese
   postal_code: false
   unofficial_names:
   - Hong Kong
@@ -52,3 +52,4 @@ HK:
         lat: 22.1435
         lng: 113.8259001
   currency_code: HKD
+  start_of_week: monday

@@ -20,6 +20,11 @@ TH:
   world_region: APAC
   un_locode: TH
   nationality: Thai
+  vat_rates:
+    standard: 7
+    reduced: [0]
+    super_reduced: 
+    parking: 
   postal_code: true
   unofficial_names:
   - Thailand
@@ -47,3 +52,4 @@ TH:
         lat: 5.613038
         lng: 97.343396
   currency_code: THB
+  start_of_week: monday

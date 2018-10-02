@@ -1,6 +1,12 @@
 ---
 NP:
   continent: Asia
+  address_format: |-
+    {{recipient}}
+    {{street}}
+    {{city}}
+    {{region}} {{postalcode}}
+    {{country}}
   alpha2: NP
   alpha3: NPL
   country_code: '977'
@@ -30,6 +36,10 @@ NP:
   - ne
   languages_spoken:
   - ne
+  - mai
+  - bho
+  - new
+  - urd
   geo:
     latitude: 28.394857
     latitude_dec: '28.259138107299805'
@@ -47,3 +57,4 @@ NP:
         lat: 26.3479661
         lng: 80.05846980000001
   currency_code: NPR
+  start_of_week: sunday
