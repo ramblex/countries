@@ -322,7 +322,7 @@ describe ISO3166::Country do
       countries = ISO3166::Country.all_translated('fr')
       expect(countries).to be_an(Array)
       expect(countries.first).to be_a(String)
-      expect(countries.first).to eq('Afghanistan')
+      expect(countries.first).to eq('Aruba')
       # countries missing the desired locale will not be added to the list
       # so all 250 countries may not be returned, 'fr' returns 249, for example
       expect(countries.size).to eq(NUM_OF_COUNTRIES)
@@ -332,7 +332,7 @@ describe ISO3166::Country do
       countries = ISO3166::Country.all_translated
       expect(countries).to be_an(Array)
       expect(countries.first).to be_a(String)
-      expect(countries.first).to eq('Afghanistan')
+      expect(countries.first).to eq('Aruba')
       expect(countries.size).to eq(NUM_OF_COUNTRIES)
     end
   end
@@ -397,14 +397,31 @@ describe ISO3166::Country do
       countries = ISO3166::Country.new(:de).translation('xxx')
       expect(countries).to be_nil
     end
+
+    context 'should return variant locales' do
+      it 'should return different value for Chinese variants' do
+        ISO3166.configuration.locales = [:'zh-cn', :'zh-hk', :'zh-tw']
+        name_cn = ISO3166::Country['TW'].translation('zh-cn')
+        name_hk = ISO3166::Country['TW'].translation('zh-hk')
+        name_tw = ISO3166::Country['TW'].translation('zh-tw')
+        expect([name_cn, name_hk, name_tw].uniq.size).to eql 3
+      end
+
+      it 'should return different value for Portuguese variants' do
+        ISO3166.configuration.locales = [:pt, :'pt-br']
+        name_pt = ISO3166::Country['SG'].translation('pt')
+        name_br = ISO3166::Country['SG'].translation('pt-br')
+        expect([name_pt, name_br].uniq.size).to eql 2
+      end
+    end
   end
 
   describe 'translations' do
     it 'should return an hash of all country names translated to the selected locale' do
       countries = ISO3166::Country.translations('fr')
       expect(countries).to be_an(Hash)
-      expect(countries.first[0]).to eq('AF')
-      expect(countries.first).to eq(%w(AF Afghanistan))
+      expect(countries.first[0]).to eq('AW')
+      expect(countries.first).to eq(%w(AW Aruba))
       # countries missing the desired locale will not be added to the list
       # so all 250 countries may not be returned, 'fr' returns 249, for example
       expect(countries.size).to eq(NUM_OF_COUNTRIES)
@@ -413,8 +430,8 @@ describe ISO3166::Country do
     it 'should return an hash of all country names in English if no locale is passed' do
       countries = ISO3166::Country.translations
       expect(countries).to be_an(Hash)
-      expect(countries.first[0]).to eq('AF')
-      expect(countries.first).to eq(%w(AF Afghanistan))
+      expect(countries.first[0]).to eq('AW')
+      expect(countries.first).to eq(%w(AW Aruba))
       expect(countries.size).to eq(NUM_OF_COUNTRIES)
     end
   end
@@ -501,6 +518,19 @@ describe ISO3166::Country do
       spain_data = ISO3166::Country.find_all_by(:names, /Españ/)
       expect(spain_data).to be_a Hash
       expect(spain_data.keys).to eq(['ES'])
+    end
+
+    it 'performs reasonably' do
+      start = Time.now
+      250.times do
+        lookup = ['ZM', 'ZMB', 'Zambia', 'US', 'USA', 'United States'].sample
+        case lookup.length
+        when 2 then ISO3166::Country.find_all_by(:alpha2, lookup)
+        when 3 then ISO3166::Country.find_all_by(:alpha3, lookup)
+        else ISO3166::Country.find_all_by(:name, lookup)
+        end
+      end
+      expect(Time.now - start).to be < 1
     end
   end
 

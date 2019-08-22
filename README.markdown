@@ -2,7 +2,7 @@
 
 Countries is a collection of all sorts of useful information for every country in the ISO 3166 standard. It contains info for the following standards ISO3166-1 (countries), ISO3166-2 (states/subdivisions), ISO4217 (currency) and E.164 (phone numbers). I will add any country based data I can get access to. I hope this to be a repository for all country based information.
 
-[![Codewake](https://www.codewake.com/badges/ask_question_flat_square.svg)](https://www.codewake.com/p/countries) [![Gem Version](https://badge.fury.io/rb/countries.svg)](https://badge.fury.io/rb/countries) [![Build Status](https://travis-ci.org/hexorx/countries.svg)](https://travis-ci.org/hexorx/countries) [![Dependency Status](https://gemnasium.com/hexorx/countries.svg)](https://gemnasium.com/hexorx/countries) [![Code Climate](https://codeclimate.com/github/hexorx/countries.svg)](https://codeclimate.com/github/hexorx/countries)
+[![Gem Version](https://badge.fury.io/rb/countries.svg)](https://badge.fury.io/rb/countries) [![Build Status](https://travis-ci.org/hexorx/countries.svg)](https://travis-ci.org/hexorx/countries) [![Code Climate](https://codeclimate.com/github/hexorx/countries.svg)](https://codeclimate.com/github/hexorx/countries)
 
 ## Installation
 
@@ -47,7 +47,11 @@ To Use
 gem 'countries', require: 'countries/global'
 ```
 
-##### Upgrading Country Helper to > 1.2.0
+## Upgrading to 3.x
+
+We dropped currency support via money by default, see [instructions](README.markdown#Currencies) if you are using currency featues
+
+## Upgrading Country Helper to > 1.2.0
 ``` ruby
 gem 'countries', require: 'global'
 ```
@@ -61,7 +65,7 @@ gem 'countries', require: 'countries/global'
 
 As of 2.0 you can selectively load locales to reduce memory usage in production.
 
-By default we load I18n.available_locales if I18n is present, otherwise only [:en]. This means almost any rails environment will only bring in it's supported translations.
+By default we load I18n.available_locales if I18n is present, otherwise only [:en]. This means almost any rails environment will only bring in its supported translations.
 
 You can add all the locales like this.
 
@@ -216,17 +220,17 @@ c.address_format # => "{{recipient}}\n{{street}}\n{{city}} {{region}} {{postalco
 
 ## Loading Custom Data
 
-As of 2.0 countries supports loading custom countries / overriding data in it's data set, though if you choose to do this please contribute back to the upstream repo!
+As of 2.0 countries supports loading custom countries / overriding data in its data set, though if you choose to do this please contribute back to the upstream repo!
 
-Any country registered this way will have it's data available for searching etc... If you are overriding an existing country, for cultural reasons, our code uses a simple merge, not a deep merge so you will need to __bring in all data you wish to be available__.  Bringing in an existing country will also remove it from the internal management of translations, __all registered countries will remain in memory__.
+Any country registered this way will have its data available for searching etc... If you are overriding an existing country, for cultural reasons, our code uses a simple merge, not a deep merge so you will need to __bring in all data you wish to be available__.  Bringing in an existing country will also remove it from the internal management of translations, __all registered countries will remain in memory__.
 
 ``` ruby
 ISO3166::Data.register(
-  alpha2: "LOL",
+  alpha2: 'LOL',
   name: 'Happy Country',
   translations: {
-    'en' => "Happy Country",
-    'de' => "glückliches Land"
+    'en' => 'Happy Country',
+    'de' => 'glückliches Land'
   }
 )
 
@@ -289,9 +293,9 @@ c.emoji_flag # => "🇲🇾"
 
 ### Please do not submit pull requests on `cache/**/*`
 
-Any additions should be directed upstream to [pkg-isocodes](http://anonscm.debian.org/cgit/pkg-isocodes/iso-codes.git/)
+Any additions should be directed upstream to [pkg-isocodes](https://salsa.debian.org/iso-codes-team/iso-codes)
 
-New Bugs can be filed upstream here https://alioth.debian.org/projects/pkg-iso-codes/
+New Bugs can be filed upstream here https://salsa.debian.org/iso-codes-team/iso-codes/issues
 If you need to correct an upstream translation please add it to the lib/countries/data/translations_corrections.yaml
 
 ```
